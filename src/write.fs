@@ -27,7 +27,6 @@ let transform (file: FsFile): FsFile =
         |> removeExternalModuleAlias
         |> mergeModulesInFile
         |> aliasToInterfacePartly
-        |> interSectionToObj // after aliasToInterfacePartly          
         |> extractGenericDefaultParameters
         |> typeParametersToObj // must be after fixGenericDefaultParameters        
         |> addConstructors

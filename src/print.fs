@@ -1,6 +1,7 @@
 module rec ts2fable.Print
 open ts2fable.Naming
 open Fable
+open Fable
 
 let printType (tp: FsType): string =
     match tp with
@@ -37,9 +38,12 @@ let printType (tp: FsType): string =
         ")"|> line.Add
         line |> String.concat ""
     | FsType.Tuple tp ->
-        let line = ResizeArray()
-        tp.Types |> List.map printType |> String.concat " * " |> line.Add
-        line |> String.concat ""
+        match tp.Kind with 
+        | FsTupleKind.InterSection -> "obj"
+        | _ ->
+            let line = ResizeArray()
+            tp.Types |> List.map printType |> String.concat " * " |> line.Add
+            line |> String.concat ""
     | FsType.Variable vb ->
         let vtp = vb.Type |> printType
         sprintf "abstract %s: %s%s" vb.Name vtp (if vb.IsConst then "" else " with get, set")
