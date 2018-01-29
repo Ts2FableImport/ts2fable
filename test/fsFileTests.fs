@@ -53,7 +53,7 @@ describe "tests" <| fun _ ->
     let existMany i name (isType:FsType -> bool) fsFiles= 
         fsFiles
         |> getTypeByName name
-        |> List.filter isType
+        |> List.filter isType 
         |> fun tp -> tp.Length = i    
         
     let getTopTypes fsFiles = 
@@ -228,14 +228,13 @@ describe "tests" <| fun _ ->
             |> existOnlyOne "Buffer'" FsType.isInterface
             |> equal true
 
-    only "fix interSection to simple obj" <| fun _ ->
+    it "extract interSection to simple obj" <| fun _ ->
         let tsPaths = ["test/fragments/Node/f2.d.ts"]
         let fsPath = "test/fragments/Node/f2.fs"
         testFsFiles tsPaths fsPath  <| fun fsFiles ->
             fsFiles 
-            |> getAllTypes
-            |> List.choose FsType.asTuple
-            |> fun c -> equal c.Length 2 
+            |> existMany 4 "__promisify__" FsType.isFunction
+            |> equal true
 
     it "remove external module alias" <| fun _ ->
         let tsPaths = ["test/fragments/reactxp/f1.d.ts"]
