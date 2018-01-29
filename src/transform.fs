@@ -1157,7 +1157,7 @@ let fixPointingToRemoteSubModuleAlias  (fo: FsFileOut): FsFileOut =
                                 |> Option.map (fun immd -> immd.SpecifiedModule)
                             )
                             |> Option.flatten
-                            
+
                         match externalSpecifiedModule with 
                         | Some newValue -> 
                             let oldValue = parts.[0..1] |> String.concat(".") 
@@ -1178,14 +1178,13 @@ let fixServentModuleImport (f: FsFile): FsFile =
             match im with
             | FsImport.Module immd ->
                 match immd.Kind with 
-                | FsModuleImportKind.Alias -> 
+                | FsModuleImportKind.Alias | FsModuleImportKind.CurrentPackage -> 
                     let name = path.join(ResizeArray [relativePath;immd.SpecifiedModule]).Replace("\\","/")
                     { immd with
                         SpecifiedModule = if name.Contains("./") then name else sprintf "./%s" name
+                        Kind = FsModuleImportKind.Alias
                     }
                     |> FsImport.Module |> FsType.Import
-                | FsModuleImportKind.CurrentPackage ->
-                     { immd with Kind = FsModuleImportKind.Alias } |> FsImport.Module |> FsType.Import
                 | _ -> tp
             | _ -> tp
         | _ -> tp
