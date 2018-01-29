@@ -119,7 +119,7 @@ let rec fixType (fix: FsType -> FsType) (tp: FsType): FsType =
     | FsType.StringLiteral _ -> tp
     | FsType.This -> tp
     | FsType.Import _ -> tp
-    | FsType.TypeParameter _ -> tp
+    | FsType.GenericDefaultTypeParameter _ -> tp
     | FsType.TypeQuery _ -> tp
     |> fix // current type
 
@@ -988,13 +988,13 @@ let fixTypesHasESKeyWords  (f: FsFile): FsFile =
         | _ -> tp
     )
 
-let extractGenericDefaultParameters (f: FsFile): FsFile =
-    let extractAliasesFromTypeParameters name tps = 
+let extractAliasFromGenericDefaultTypeParameters (f: FsFile): FsFile =
+    let extract name tps = 
         let aliases = List<FsAlias>()
 
         tps |> List.choose(fun tp ->
             match tp with 
-            | FsType.TypeParameter tpr -> tpr.Default
+            | FsType.GenericDefaultTypeParameter tpr -> Some tpr.Default
             | _ -> None
             )
             |> List.iteri(fun i _ ->
@@ -1022,13 +1022,13 @@ let extractGenericDefaultParameters (f: FsFile): FsFile =
                         match tp with 
                         | FsType.Interface it -> 
                             it.TypeParameters
-                            |> extractAliasesFromTypeParameters it.Name
+                            |> extract it.Name
                             |> tps.AddRange
                             
                             tp |> tps.Add
                         | FsType.Alias al ->
                             al.TypeParameters
-                            |> extractAliasesFromTypeParameters al.Name
+                            |> extract al.Name
                             |> tps.AddRange
 
                             tp |> tps.Add

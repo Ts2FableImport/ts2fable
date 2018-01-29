@@ -81,11 +81,11 @@ let readTypeParameters (checker: TypeChecker) (tps: List<TypeParameterDeclaratio
             match tp.``default`` with 
             | Some df ->
                 {
-                    Default = readTypeNode checker df |> Some
+                    Default = readTypeNode checker df
                     Name = tp.name.getText()
                     FullName = getFullNodeName checker tp
                 }
-                |> FsType.TypeParameter                
+                |> FsType.GenericDefaultTypeParameter                
             | None ->
                 {
                     Name = tp.name.getText()

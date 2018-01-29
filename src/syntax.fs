@@ -30,9 +30,9 @@ type FsTypeLiteral =
         Members: FsType list
     }
 
-type FsTypeParameter = 
+type FsGenericDefaultTypeParameter = 
     {
-        Default: FsType option
+        Default: FsType
         Name: string
         FullName: string
     }    
@@ -308,7 +308,7 @@ type FsType =
     | This
     | Import of FsImport
     | TypeLiteral of FsTypeLiteral
-    | TypeParameter of FsTypeParameter
+    | GenericDefaultTypeParameter of FsGenericDefaultTypeParameter
     | TypeQuery of FsTypeQuery
 
 [<RequireQualifiedAccess>]
