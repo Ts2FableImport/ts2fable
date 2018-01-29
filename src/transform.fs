@@ -1100,7 +1100,7 @@ let aliasToInterfacePartly (f: FsFile): FsFile =
                 | _ -> tp
             | _ -> tp    
         | _ -> tp     
-    )         
+    )    
 
 let removeExternalModuleAlias (f: FsFile): FsFile =
     f |> fixFile (fun tp ->
@@ -1231,3 +1231,12 @@ let extractTypeQuery (f: FsFile): FsFile =
 
         | _ -> tp
     )
+let extractInterSection (f: FsFile): FsFile =
+    f |> fixFile (fun tp ->
+        match tp with 
+        | FsType.Tuple tl when tl.Kind = FsTupleKind.InterSection -> simpleType "obj"
+        | _ -> tp
+    )
+
+    
+    

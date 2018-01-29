@@ -228,15 +228,14 @@ describe "tests" <| fun _ ->
             |> existOnlyOne "Buffer'" FsType.isInterface
             |> equal true
 
-    it "fix interSection to simple obj" <| fun _ ->
+    only "fix interSection to simple obj" <| fun _ ->
         let tsPaths = ["test/fragments/Node/f2.d.ts"]
         let fsPath = "test/fragments/Node/f2.fs"
         testFsFiles tsPaths fsPath  <| fun fsFiles ->
             fsFiles 
             |> getAllTypes
             |> List.choose FsType.asTuple
-            |> List.forall(fun tu -> tu.Types.Length = 2)      
-            |> equal true
+            |> fun c -> equal c.Length 2 
 
     it "remove external module alias" <| fun _ ->
         let tsPaths = ["test/fragments/reactxp/f1.d.ts"]
