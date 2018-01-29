@@ -15,6 +15,7 @@ open System.Collections.Generic
 open System
 open ts2fable.Keywords
 open TypeScript.Ts
+open Fable.Import.JS
 
 
 let [<Global>] describe (msg: string) (f: unit->unit): unit = jsNative

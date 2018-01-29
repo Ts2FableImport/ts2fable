@@ -1149,13 +1149,15 @@ let fixPointingToRemoteSubModuleAlias  (fo: FsFileOut): FsFileOut =
                         let externalSpecifiedModule = 
                             fo.Files
                             |> List.collect(fun f -> f.Modules)
-                            |> List.find(fun md -> md.Name = specifiedModule)
-                            |> fun md -> 
+                            |> List.tryFind(fun md -> md.Name = specifiedModule)
+                            |> Option.map (fun md -> 
                                 md.Types 
                                 |> List.choose asModuleImportedAlias
                                 |> List.tryFind (fun immd -> immd.Module = parts.[1])
                                 |> Option.map (fun immd -> immd.SpecifiedModule)
-                        
+                            )
+                            |> Option.flatten
+                            
                         match externalSpecifiedModule with 
                         | Some newValue -> 
                             let oldValue = parts.[0..1] |> String.concat(".") 
