@@ -28,7 +28,6 @@ let transform (file: FsFile): FsFile =
         |> mergeModulesInFile
         |> aliasToInterfacePartly
         |> extractGenericDefaultParameters
-        |> typeParametersToObj // must be after fixGenericDefaultParameters        
         |> addConstructors
         |> fixThis
         |> fixNodeArray

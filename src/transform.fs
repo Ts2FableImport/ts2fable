@@ -1064,25 +1064,6 @@ let extractGenericDefaultParameters (f: FsFile): FsFile =
         | _ -> tp    
     )
 
-let typeParametersToObj (f: FsFile): FsFile =
-    f |> fixFile (fun tp ->
-        match tp with 
-        | FsType.TypeParameter tpr ->
-            {
-                Name = tpr.Name
-                FullName =tpr.FullName
-            }
-            |> FsType.Mapped
-        | _ -> tp     
-    )
-
-let interSectionToObj (f: FsFile): FsFile =
-    f |> fixFile (fun tp ->
-        match tp with 
-        | FsType.Tuple tu when tu.Kind = FsTupleKind.InterSection ->
-            simpleType "obj"
-        | _ -> tp     
-    )    
 
 let aliasToInterfacePartly (f: FsFile): FsFile =
     f |> fixFile (fun tp ->
