@@ -998,8 +998,8 @@ let fixTypesHasESKeyWords  (f: FsFile): FsFile =
         | _ -> tp
     )
 
-let extractAliasFromGenericDefaultTypeParameters (f: FsFile): FsFile =
-    let extract name tps = 
+let extractGenericDefaultTypeParameters (f: FsFile): FsFile =
+    let extractAliases name tps = 
         let aliases = List<FsAlias>()
 
         tps |> List.choose(fun tp ->
@@ -1032,13 +1032,13 @@ let extractAliasFromGenericDefaultTypeParameters (f: FsFile): FsFile =
                         match tp with 
                         | FsType.Interface it -> 
                             it.TypeParameters
-                            |> extract it.Name
+                            |> extractAliases it.Name
                             |> tps.AddRange
                             
                             tp |> tps.Add
                         | FsType.Alias al ->
                             al.TypeParameters
-                            |> extract al.Name
+                            |> extractAliases al.Name
                             |> tps.AddRange
 
                             tp |> tps.Add
@@ -1050,7 +1050,12 @@ let extractAliasFromGenericDefaultTypeParameters (f: FsFile): FsFile =
             } |> FsType.Module
         | _ -> tp    
     )
-
+    |> fixFile (fun tp -> 
+        match tp with 
+        | FsType.GenericDefaultTypeParameter gdtp -> 
+            { Name = gdtp.Name; FullName = gdtp.FullName} |> FsType.Mapped
+        | _ -> tp    
+        )
 
 let aliasToInterfacePartly (f: FsFile): FsFile =
     f |> fixFile (fun tp ->

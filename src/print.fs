@@ -5,7 +5,6 @@ open Fable
 let printType (tp: FsType): string =
     match tp with
     | FsType.Mapped mp -> mp.Name
-    | FsType.GenericDefaultTypeParameter tprm-> tprm.Name
     | FsType.TODO -> "obj"
     | FsType.Array at ->
         sprintf "ResizeArray<%s>" (printType at)
