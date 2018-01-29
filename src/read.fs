@@ -815,6 +815,6 @@ let rec readTypeQuery (et:EntityName) :FsType =
     | U2.Case1 id -> id.getText() |> simpleType
     | U2.Case2 ql -> 
         {
-            Left = readEntityName ql.left
+            Left = readTypeQuery ql.left
             Right = ql.right.getText() |> simpleType
         } |> FsType.TypeQuery
