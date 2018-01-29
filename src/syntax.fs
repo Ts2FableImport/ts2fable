@@ -273,8 +273,8 @@ type FsMapped =
 
 type FsTypeQuery = 
     {
-        Left: FsType
-        Right: FsType
+        IsPointingToCurrentFsFile: bool
+        Name: string
     }
 let simpleType name: FsType =
     { 
@@ -325,6 +325,7 @@ module FsType =
     let isMapped tp = match tp with | FsType.Mapped _ -> true | _ -> false
 
     let asFunction (tp: FsType) = match tp with | FsType.Function v -> Some v | _ -> None
+    let asImport (tp: FsType) = match tp with | FsType.Import v -> Some v | _ -> None
     let asProperty (tp: FsType) = match tp with | FsType.Property v -> Some v | _ -> None
     let asInterface (tp: FsType) = match tp with | FsType.Interface v -> Some v | _ -> None
     let asGeneric (tp: FsType) = match tp with | FsType.Generic v -> Some v | _ -> None

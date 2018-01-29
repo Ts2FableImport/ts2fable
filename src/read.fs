@@ -327,7 +327,12 @@ let rec readTypeNode (checker: TypeChecker) (t: TypeNode): FsType =
         // simpleType "obj" // TODO?
     | SyntaxKind.TypeQuery ->
         let tq = t :?> TypeQueryNode
-        readTypeQuery tq.exprName
+        {
+            IsPointingToCurrentFsFile = false
+            Name = readEntityName tq.exprName 
+        } |> FsType.TypeQuery
+        
+
     | SyntaxKind.LiteralType -> 
         let lt = t :?> LiteralTypeNode
         let readLiteralKind (kind: SyntaxKind) text: FsType =
@@ -810,11 +815,10 @@ let readAllResolvedModuleNames  (tsPath: string) =
     |> fun (f,s) -> f |> List.map fst, s |> List.map fst  
 
 
-let rec readTypeQuery (et:EntityName) :FsType = 
+let rec readEntityName (et:EntityName) :string = 
     match et with 
-    | U2.Case1 id -> id.getText() |> simpleType
+    | U2.Case1 id -> id.getText()
     | U2.Case2 ql -> 
-        {
-            Left = readTypeQuery ql.left
-            Right = ql.right.getText() |> simpleType
-        } |> FsType.TypeQuery
+        let left = readEntityName ql.left
+        let right = ql.right.getText()
+        [left;right] |> String.concat(".")

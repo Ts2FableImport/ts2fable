@@ -36,16 +36,8 @@ describe "tests" <| fun _ ->
     timeout 10000
 
     let getAllTypes fsFiles =
-        let tps = List<FsType>()
-        fsFiles
-        |> List.iter(fun fsFile ->
-            fsFile
-            |> fixFile (fun tp -> 
-                tp |> tps.Add
-                tp
-            ) |> ignore
-        )
-        tps |> List.ofSeq
+        fsFiles |> List.collect getAllTypesFromFile
+
     
     let getTypeByName name fsFiles =
         getAllTypes fsFiles
@@ -56,6 +48,12 @@ describe "tests" <| fun _ ->
         |> getTypeByName name
         |> List.filter isType
         |> fun tp -> tp.Length = 1
+
+    let existMany i name (isType:FsType -> bool) fsFiles= 
+        fsFiles
+        |> getTypeByName name
+        |> List.filter isType
+        |> fun tp -> tp.Length = i    
         
     let getTopTypes fsFiles = 
         fsFiles
@@ -272,5 +270,19 @@ describe "tests" <| fun _ ->
         testFsFiles tsPaths fsPath  <| fun fsFiles ->
             fsFiles 
             |> existOnlyOne "Types.Animated.EndCallback" FsType.isMapped
+            |> equal true
+            
+    it "read type query" <| fun _ ->
+        let tsPaths = 
+            [
+                "test/fragments/reactxp/f6.d.ts"
+            ]
+        let fsPath = "test/fragments/reactxp/f6.fs"
+        testFsFiles tsPaths fsPath  <| fun fsFiles ->
+            (
+                (existMany 2 "RXInterfaces.Text" FsType.isMapped fsFiles)
+                &&
+                (existOnlyOne "obj" FsType.isMapped fsFiles)
+            )
             |> equal true
             

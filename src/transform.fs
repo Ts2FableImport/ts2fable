@@ -133,6 +133,16 @@ let fixFile (fix: FsType -> FsType) (f: FsFile): FsFile =
             |> List.choose FsType.asModule
     }
 
+let getAllTypesFromFile fsFile =
+    let tps = List []
+    fsFile
+    |> fixFile (fun tp -> 
+        tp |> tps.Add
+        tp
+    ) |> ignore
+    tps |> List.ofSeq
+       
+    
 
 let mergeTypes(tps: FsType list): FsType list =
     let index = Dictionary<string,int>()
@@ -1178,3 +1188,40 @@ let fixServentModuleImport (f: FsFile): FsFile =
             | _ -> tp
         | _ -> tp
     )    
+
+let extractTypeQuery (f: FsFile): FsFile =
+    let mdNames = 
+        f 
+        |> getAllTypesFromFile 
+        |> List.filter (fun tp -> 
+            match tp with 
+            | FsType.Import im -> 
+                match im with
+                | FsImport.Module immd -> immd.Kind = FsModuleImportKind.CurrentPackage
+                | _ -> false
+            | _ -> false    
+        )
+        |> List.map getName
+    
+    let asSimpleType() = 
+        simpleType "obj"
+
+    f |> fixFile(fun tp ->
+        match tp with 
+        | FsType.TypeQuery tq -> 
+            let parts = tq.Name.Split('.')
+            
+            if parts.Length = 2 then 
+            
+                if List.contains parts.[0] mdNames 
+                then  
+                    parts.[0..1] 
+                    |> String.concat(".") 
+                    |> simpleType
+                
+                else asSimpleType()
+            
+            else  asSimpleType()
+
+        | _ -> tp
+    )
