@@ -120,6 +120,7 @@ let rec fixType (fix: FsType -> FsType) (tp: FsType): FsType =
     | FsType.This -> tp
     | FsType.Import _ -> tp
     | FsType.TypeParameter _ -> tp
+    | FsType.TypeQuery _ -> tp
     |> fix // current type
 
 /// recursively fix all the FsType childen for the given FsFile

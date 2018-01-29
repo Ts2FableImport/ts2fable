@@ -326,8 +326,8 @@ let rec readTypeNode (checker: TypeChecker) (t: TypeNode): FsType =
         // function createKeywordTypeNode(kind: KeywordTypeNode["kind"]): KeywordTypeNode;
         // simpleType "obj" // TODO?
     | SyntaxKind.TypeQuery ->
-        // let tq = t :?> TypeQueryNode
-        simpleType "obj"
+        let tq = t :?> TypeQueryNode
+        readTypeQuery tq.exprName
     | SyntaxKind.LiteralType -> 
         let lt = t :?> LiteralTypeNode
         let readLiteralKind (kind: SyntaxKind) text: FsType =
@@ -808,3 +808,13 @@ let readAllResolvedModuleNames  (tsPath: string) =
     loop [tsPath,FsModuleImportKind.CurrentPackage] tsFile
     |> List.partition (fun (_,v) -> FsModuleImportKind.isNodePackage v)
     |> fun (f,s) -> f |> List.map fst, s |> List.map fst  
+
+
+let rec readTypeQuery (et:EntityName) :FsType = 
+    match et with 
+    | U2.Case1 id -> id.getText() |> simpleType
+    | U2.Case2 ql -> 
+        {
+            Left = readEntityName ql.left
+            Right = ql.right.getText() |> simpleType
+        } |> FsType.TypeQuery

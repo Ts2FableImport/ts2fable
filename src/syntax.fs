@@ -271,6 +271,11 @@ type FsMapped =
         FullName: string
     }
 
+type FsTypeQuery = 
+    {
+        Left: FsType
+        Right: FsType
+    }
 let simpleType name: FsType =
     { 
         // Namespace = []
@@ -304,6 +309,7 @@ type FsType =
     | Import of FsImport
     | TypeLiteral of FsTypeLiteral
     | TypeParameter of FsTypeParameter
+    | TypeQuery of FsTypeQuery
 
 [<RequireQualifiedAccess>]
 module FsType =
