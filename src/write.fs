@@ -61,9 +61,7 @@ let transform (file: FsFile): FsFile =
     else    
         file
         |> wrappedWithModule
-        // |> removeServentNodeModuleImport
-        |> currentModuleImportToAlias
-        |> fixServentImportedModuleName
+        |> fixServentModuleImport
         |> beforeIExports
         |> afterIExports
 

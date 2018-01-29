@@ -1,7 +1,6 @@
 module rec ts2fable.Print
 open ts2fable.Naming
 open Fable
-open Fable
 
 let printType (tp: FsType): string =
     match tp with

@@ -974,30 +974,7 @@ let wrappedWithModule (f: FsFile): FsFile =
                     Attributes = []                           
                 } 
             ]
-    }
-    
-
-
-let fixServentImportedModuleName (f: FsFile): FsFile =
-    let relativePath = path.relative(path.dirname f.MasterFileName,path.dirname f.FileName)
-    
-    f |> fixFile (fun tp ->
-        match tp with
-        | FsType.Import im ->
-            match im with
-            | FsImport.Module immd ->
-                match immd.Kind with 
-                | FsModuleImportKind.Alias -> 
-                    let name = path.join(ResizeArray [relativePath;immd.SpecifiedModule]).Replace("\\","/")
-                    { immd with
-                        SpecifiedModule = if name.Contains("./") then name else sprintf "./%s" name
-                    }
-                    |> FsImport.Module |> FsType.Import
-                | _ -> tp
-            | _ -> tp
-        | _ -> tp
-    )
-
+    }     
 let fixTypesHasESKeyWords  (f: FsFile): FsFile =
     
     f |> fixFile (fun tp ->
@@ -1180,13 +1157,24 @@ let fixPointingToRemoteSubModuleAlias  (fo: FsFileOut): FsFileOut =
             )
         )
     }
-let currentModuleImportToAlias (f: FsFile): FsFile =
+let fixServentModuleImport (f: FsFile): FsFile =
+    let relativePath = path.relative(path.dirname f.MasterFileName,path.dirname f.FileName)
+    
     f |> fixFile (fun tp ->
-        match tp with 
+        match tp with
         | FsType.Import im ->
-            match im with 
-            | FsImport.Module immd when immd.Kind = FsModuleImportKind.CurrentPackage -> 
-                { immd with Kind = FsModuleImportKind.Alias } |> FsImport.Module |> FsType.Import
-            | _ -> tp    
-        | _ -> tp     
-    )     
+            match im with
+            | FsImport.Module immd ->
+                match immd.Kind with 
+                | FsModuleImportKind.Alias -> 
+                    let name = path.join(ResizeArray [relativePath;immd.SpecifiedModule]).Replace("\\","/")
+                    { immd with
+                        SpecifiedModule = if name.Contains("./") then name else sprintf "./%s" name
+                    }
+                    |> FsImport.Module |> FsType.Import
+                | FsModuleImportKind.CurrentPackage ->
+                     { immd with Kind = FsModuleImportKind.Alias } |> FsImport.Module |> FsType.Import
+                | _ -> tp
+            | _ -> tp
+        | _ -> tp
+    )    
