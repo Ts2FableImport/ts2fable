@@ -9,11 +9,9 @@ open System.Collections.Generic
 open System
 open ts2fable.Naming
 open System.Collections
-open System.Collections.Generic
 open ts2fable.Keywords
 open Fable.AST.Babel
 open ts2fable.Read
-open System.Collections.Generic
 
 /// recursively fix all the FsType childen
 let rec fixType (fix: FsType -> FsType) (tp: FsType): FsType =
@@ -828,6 +826,9 @@ let extractTypeLiterals(f: FsFile): FsFile =
 
                         [it2] @ (List.ofSeq newTypes) // append new types
                     
+                    // compile ts export declare const alias
+                    // to an global variable and a anonymous interface type suffixed with single quotation
+                    // test/fragments/synctasks/f1.d.ts
                     | FsType.Variable vb when vb.HasDeclare && vb.IsConst ->
                         match vb.Type with 
                         | FsType.TypeLiteral tl -> 
@@ -853,6 +854,8 @@ let extractTypeLiterals(f: FsFile): FsFile =
                         | _ -> [tp]    
 
                     | FsType.Alias al -> 
+                        // lift TypeLiteral in union type
+                        // test/fragments/react/f1.d.ts
                         match al.Type with 
                         | FsType.Union un -> 
                             let un2 = 
@@ -867,6 +870,10 @@ let extractTypeLiterals(f: FsFile): FsFile =
                                         tps |> List.ofSeq    
                                 }
                             {al with Type = un2 |> FsType.Union} |> FsType.Alias |> List.singleton
+                        
+                        // ts export declare type should be compild to interface type
+                        // as it has multiple property
+                        // test/fragments/synctasks/f2.d.ts
                         | FsType.TypeLiteral tl ->  
                             {
                                 Comments = []
