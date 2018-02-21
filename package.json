@@ -2,10 +2,10 @@
   "files": [
     "dist/"
   ],
-  "main": "dist/ts2fable.js",
+  "main": "./dist/ts2fable.js",
   "name": "ts2fable",
   "version": "0.0.0",
-  "description": "TypeScript definition files parser for fable-compiler",  
+  "description": "TypeScript definition files parser for fable-compiler",
   "scripts": {
     "watchTest": "fake run tools/workflow.fsx",
     "postinstall": "node ./node_modules/vscode/bin/install"
@@ -28,7 +28,6 @@
   },
   "homepage": "https://github.com/fable-compiler/ts2fable#readme",
   "dependencies": {
-    "express": "^4.16.2",
     "typescript": "2.6.1",
     "yargs": "^10.0.3"
   },
@@ -58,7 +57,7 @@
     "webpack": "^3.11.0",
     "webpack-dev-server": "^2.11.1"
   },
-    "engines": {
-      "vscode": "^1.18.1"
+  "engines": {
+    "vscode": "^1.18.1"
   }
 }
