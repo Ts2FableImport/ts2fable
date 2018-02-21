@@ -7,7 +7,7 @@
             "command": "yarn",
             "args": ["watchTest"],
             "type": "shell",
-            "label": "Test",
+            "label": "Watch",
             "group": "build",
             "isBackground": true,
             "problemMatcher": {

@@ -285,3 +285,20 @@ describe "tests" <| fun _ ->
             )
             |> equal true
             
+    only "multiple linked files reactxp-navigation" <| fun _ ->
+        let rec loop tsPath fsDir = 
+
+            let nodePaths,tsPaths= 
+                tsPath
+                |> readAllResolvedModuleNames 
+            let fsBasename = tsPath |> getJsModuleName |> capitalize |> sprintf "%s.fs" 
+            let fsPath = path.join(ResizeArray [fsDir; fsBasename])
+            testFsFiles tsPaths fsPath  <| fun _ ->
+                equal true true   
+
+            for nodePath in nodePaths do
+                loop nodePath fsDir    
+        
+        let tsPath = "node_modules/reactxp-navigation/dist/web/Navigator.d.ts"
+        let fsDir = "test-compile"        
+        loop tsPath fsDir
