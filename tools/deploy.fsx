@@ -97,11 +97,12 @@ Target.Create "BuildTest" (fun _ ->
 )
 
 Target.Create "RunTest" (fun _ ->
-    node <| sprintf "%s --reporter mocha-appveyor-reporter %s" mochaPath (buildDir</>"test.js" |> Path.getFullName)
+    match buildServer with 
+    | AppVeyor -> node <| sprintf "%s --reporter mocha-appveyor-reporter %s" mochaPath (buildDir</>"test.js" |> Path.getFullName)
+    | _ -> node <| sprintf "%s %s" mochaPath (buildDir</>"test.js" |> Path.getFullName)
 )
 
 Target.Create "Publish" (fun _ ->
-    
     match buildServer with 
     | AppVeyor -> 
         node (toolDir</>"build-update.package.js")
