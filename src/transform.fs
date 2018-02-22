@@ -997,6 +997,7 @@ let fixTypesHasESKeyWords  (f: FsFile): FsFile =
     f |> fixFile (fun tp ->
         match tp with
         | FsType.Generic gn ->
+            printf "Hello"
             esKeyWords 
             |> Set.contains (getName tp)
             |> function 
