@@ -101,7 +101,7 @@ describe "tests" <| fun _ ->
             for nodePath in nodePaths do
                 loop nodePath fsDir    
         
-        let tsPath = "node_modules/reactxp/dist/web/ReactXP.d.ts"
+        let tsPath = "node_modules/reactxp/dist/ReactXP.d.ts"
         let fsDir = "test-compile"        
         loop tsPath fsDir
 
@@ -180,11 +180,10 @@ describe "tests" <| fun _ ->
             |> List.exists (fun tp -> getName tp = "Validator" && FsType.isInterface tp)
             |> equal true                  
 
-    only "fix es6 type" <| fun _ ->
+    it "fix es6 type" <| fun _ ->
         let tsPaths = ["test/fragments/react/f6.d.ts"]
         let fsPath = "test/fragments/react/f6.fs"
         testFsFiles tsPaths fsPath  <| fun fsFiles ->
-            printf "Hello"
             fsFiles 
             |> getAllTypes
             |> List.filter FsType.isGeneric
@@ -286,6 +285,21 @@ describe "tests" <| fun _ ->
                 (existOnlyOne "obj" FsType.isMapped fsFiles)
             )
             |> equal true
+
+    only "implement interface" <| fun _ ->
+        let tsPaths = 
+            [
+                "test/fragments/reactxp/f7.d.ts"
+            ]
+        let fsPath = "test/fragments/reactxp/f7.fs"
+        testFsFiles tsPaths fsPath  <| fun fsFiles ->
+            printf "Hello"
+            (
+                (existMany 2 "RXInterfaces.Text" FsType.isMapped fsFiles)
+                &&
+                (existOnlyOne "obj" FsType.isMapped fsFiles)
+            )
+            |> equal true            
             
     it "multiple linked files reactxp-navigation" <| fun _ ->
         let rec loop tsPath fsDir = 

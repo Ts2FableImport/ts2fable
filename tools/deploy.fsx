@@ -116,8 +116,6 @@ Target.Create "Publish" (fun _ ->
         if repoName = "fable-compiler/ts2fable" && repoBranch = "master" && prHeadRepoName = "fable-compiler/ts2fable" then
             let line = sprintf "//registry.npmjs.org/:_authToken=%s\n" <| environVar "npmauthtoken`n"
             let npmrc = (GetFolderPath UserProfile)</>".npmrc"
-            printfn "Auth token is %s" line
-            printfn "npmrc path is %s" npmrc
             File.writeNew npmrc [line]
             npm "whoami"
             yarn <| sprintf "publish ts2fable-%s.tgz --new-version %s --tag next" buildVersion buildVersion

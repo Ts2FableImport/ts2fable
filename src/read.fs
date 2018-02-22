@@ -689,6 +689,14 @@ let readModuleName(mn: ModuleName): string =
     | U2.Case1 id -> id.getText().Replace("\"","")
     | U2.Case2 sl -> sl.getText()
 
+let rec readEntityName (et:EntityName) :string = 
+    match et with 
+    | U2.Case1 id -> id.getText()
+    | U2.Case2 ql -> 
+        let left = readEntityName ql.left
+        let right = ql.right.getText()
+        [left;right] |> String.concat(".")
+
 let rec readModuleDeclaration checker (md: ModuleDeclaration): FsModule =
     let types = List()
     md.ForEachChild (fun nd ->
@@ -762,7 +770,9 @@ let readResolvedModules (tsFile: SourceFile) =
     |> List.ofSeq
     |> List.iter(fun f -> 
         let name = path.join(ResizeArray [path.dirname tsFile.fileName;f.fileName]).Replace("\\","/")
-        accum.Add (name,FsModuleImportKind.CurrentPackage) )  
+        let baseName = path.basename name
+        if baseName <> "global.d.ts" then
+            accum.Add (name,FsModuleImportKind.CurrentPackage) )  
 
     accum 
     |> Seq.map(|KeyValue|) 
@@ -807,12 +817,3 @@ let readAllResolvedModuleNames  (tsPath: string) =
     loop [tsPath,FsModuleImportKind.CurrentPackage] tsFile
     |> List.partition (fun (_,v) -> FsModuleImportKind.isNodePackage v)
     |> fun (f,s) -> f |> List.map fst, s |> List.map fst  
-
-
-let rec readEntityName (et:EntityName) :string = 
-    match et with 
-    | U2.Case1 id -> id.getText()
-    | U2.Case2 ql -> 
-        let left = readEntityName ql.left
-        let right = ql.right.getText()
-        [left;right] |> String.concat(".")

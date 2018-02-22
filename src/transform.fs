@@ -117,7 +117,11 @@ let rec fixType (fix: FsType -> FsType) (tp: FsType): FsType =
     | FsType.StringLiteral _ -> tp
     | FsType.This -> tp
     | FsType.Import _ -> tp
-    | FsType.GenericDefaultTypeParameter _ -> tp
+    | FsType.GenericDefaultTypeParameter gdtp -> 
+        { gdtp with 
+            Default = fixType fix gdtp.Default
+        }
+        |> FsType.GenericDefaultTypeParameter
     | FsType.TypeQuery _ -> tp
     |> fix // current type
 
@@ -997,7 +1001,6 @@ let fixTypesHasESKeyWords  (f: FsFile): FsFile =
     f |> fixFile (fun tp ->
         match tp with
         | FsType.Generic gn ->
-            printf "Hello"
             esKeyWords 
             |> Set.contains (getName tp)
             |> function 
@@ -1005,6 +1008,13 @@ let fixTypesHasESKeyWords  (f: FsFile): FsFile =
                 | _ -> tp
         | _ -> tp
     )
+    |> fixFile (fun tp ->
+        match tp with 
+        | FsType.Mapped mp ->
+            if Set.contains mp.Name esKeyWords then
+                simpleType "obj"
+            else tp
+        | _ -> tp   )
 
 let extractGenericDefaultTypeParameters (f: FsFile): FsFile =
     let extractAliases name tps = 
@@ -1191,7 +1201,7 @@ let fixServentModuleImport (f: FsFile): FsFile =
             match im with
             | FsImport.Module immd ->
                 match immd.Kind with 
-                | FsModuleImportKind.Alias | FsModuleImportKind.CurrentPackage -> 
+                | FsModuleImportKind.CurrentPackage -> 
                     let name = path.join(ResizeArray [relativePath;immd.SpecifiedModule]).Replace("\\","/")
                     { immd with
                         SpecifiedModule = if name.Contains("./") then name else sprintf "./%s" name

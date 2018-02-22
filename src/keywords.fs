@@ -115,5 +115,6 @@ let esKeyWords =
         "Partial"
         "Pick"
         "HTMLDialogElement"
+        "HTMLWebViewElement"
     ]
     |> Set.ofList
