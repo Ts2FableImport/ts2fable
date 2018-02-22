@@ -106,8 +106,7 @@ Target.Create "Publish" (fun _ ->
     match buildServer with 
     | AppVeyor -> 
         node (toolDir</>"build-update.package.js")
-        let version = sprintf "0.6.0-build.%s" buildVersion
-        yarn <| sprintf "version --new-version %s --no-git-tag-version" version
+        yarn <| sprintf "version --new-version %s --no-git-tag-version" buildVersion
         npm "pack"
         
         let repoName = environVar "appveyor_repo_name"
@@ -121,7 +120,7 @@ Target.Create "Publish" (fun _ ->
             printfn "npmrc path is %s" npmrc
             File.writeNew npmrc [line]
             npm "whoami"
-            yarn <| sprintf "publish ts2fable-%s.tgz --new-version %s --tag next" version version
+            yarn <| sprintf "publish ts2fable-%s.tgz --new-version %s --tag next" buildVersion buildVersion
     | _ ->  ()
 )
 

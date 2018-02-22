@@ -173,12 +173,19 @@ type FsTuple =
         Kind: FsTupleKind
     }
 
+type FsImportSpecifier =
+    {
+        Name: string
+        PropertyName: string option
+    }    
+
 type TypeImport =
     {
-        Type: string
+        ImportSpecifier: FsImportSpecifier
         SpecifiedModule: string
         ResolvedModule: string option
     }
+
     
 [<RequireQualifiedAccess>]
 type FsModuleImportKind = 

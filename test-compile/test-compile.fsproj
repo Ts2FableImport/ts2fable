@@ -16,6 +16,7 @@
     <Compile Include="Synctasks.fs" />
     <Compile Include="Subscribableevent.fs" />
     <Compile Include="Reactxp.fs" />
+    <Compile Include="ReactxpNavigation.fs" />
     <Compile Include="Chalk.fs" />
     <!-- <Compile Include="Protobuf.fs" /> -->
 
