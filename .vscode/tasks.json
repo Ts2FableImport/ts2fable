@@ -4,8 +4,8 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "command": "yarn",
-            "args": ["watchTest"],
+            "command": "fake",
+            "args": ["run","tools/workflow.fsx"],
             "type": "shell",
             "label": "WatchTest",
             "group": "build",

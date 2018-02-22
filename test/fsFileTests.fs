@@ -294,10 +294,7 @@ describe "tests" <| fun _ ->
             let fsBasename = tsPath |> getJsModuleName |> capitalize |> sprintf "%s.fs" 
             let fsPath = path.join(ResizeArray [fsDir; fsBasename])
             testFsFiles tsPaths fsPath  <| fun _ ->
-                equal true true   
-
-            for nodePath in nodePaths do
-                loop nodePath fsDir    
+                equal true true    
         
         let tsPath = "node_modules/reactxp-navigation/dist/web/Navigator.d.ts"
         let fsDir = "test-compile"        
