@@ -285,7 +285,7 @@ describe "tests" <| fun _ ->
             )
             |> equal true
             
-    only "multiple linked files reactxp-navigation" <| fun _ ->
+    it "multiple linked files reactxp-navigation" <| fun _ ->
         let rec loop tsPath fsDir = 
 
             let nodePaths,tsPaths= 
@@ -299,3 +299,17 @@ describe "tests" <| fun _ ->
         let tsPath = "node_modules/reactxp-navigation/dist/web/Navigator.d.ts"
         let fsDir = "test-compile"        
         loop tsPath fsDir
+
+    only "read import " <| fun _ ->
+        let tsPaths = 
+            [
+                "test/fragments/reactxp-navigation/f1.d.ts"
+            ]
+        let fsPath = "test/fragments/reactxp-navigation/f1.fs"
+        testFsFiles tsPaths fsPath  <| fun fsFiles ->
+            (
+                (existMany 2 "RXInterfaces.Text" FsType.isMapped fsFiles)
+                &&
+                (existOnlyOne "obj" FsType.isMapped fsFiles)
+            )
+            |> equal true
