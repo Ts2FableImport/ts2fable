@@ -293,7 +293,6 @@ describe "tests" <| fun _ ->
             ]
         let fsPath = "test/fragments/reactxp/f7.fs"
         testFsFiles tsPaths fsPath  <| fun fsFiles ->
-            printf "Hello"
             (
                 (existMany 2 "RXInterfaces.Text" FsType.isMapped fsFiles)
                 &&
