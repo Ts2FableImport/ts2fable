@@ -656,7 +656,7 @@ let rec readModuleDeclaration checker (md: ModuleDeclaration): FsModule =
         Attributes = []
     }
 
-let readSourceFile (checker: TypeChecker) (sf: SourceFile) (file: FsFile): FsFile =
+let readSourceFile (checker: TypeChecker) (sfs: SourceFile list) (file: FsFile): FsFile =
     let modules = List()
 
     let gbl: FsModule =
@@ -665,8 +665,9 @@ let readSourceFile (checker: TypeChecker) (sf: SourceFile) (file: FsFile): FsFil
             IsNamespace = false
             Name = ""
             Types =
-                sf.statements
-                |> List.ofSeq
+                sfs
+                |> List.map (fun sf -> sf.statements |> List.ofSeq)
+                |> List.concat
                 |> List.collect (readStatement checker)
             HelperLines = []
             Attributes = []
