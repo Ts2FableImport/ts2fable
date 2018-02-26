@@ -64,11 +64,6 @@ let node args =
 let npm args = 
     run npmTool "./" args   
 
-Target.Create "CollectEnvironments" (fun _ ->
-    environVars()
-    |> List.iter (fun (k,v) -> printfn "Key is %s, Value is %s" k v)
-)    
-
 Target.Create "InstallDotNetCore" (fun _ ->
     DotNetCliInstall Release_2_1_4
     dotnetExePath <- DotNetInfoOptions.Create().Common.DotNetCliPath
@@ -138,7 +133,6 @@ Target.Create "Deploy" Target.DoNothing
           "BuildCli"
           "RunCli"
           "RestoreTestCompile"
-          "CollectEnvironments"
           "Publish" ]
 
 Target.RunOrDefault "Deploy"
