@@ -136,6 +136,8 @@ Target.Create "PushToExports" (fun _ ->
 
         git "config --global user.name ts2fable-exports"
         git "config --global user.email ts2fable-exports@outlook.com"
+    
+    let repositoryDir = "./ts2fable-exports"  
 
     match buildServer with 
     | AppVeyor -> 
@@ -143,10 +145,20 @@ Target.Create "PushToExports" (fun _ ->
         let repoBranch = environVar "appveyor_repo_branch"
         let RepocommitMsg = environVar "APPVEYOR_REPO_COMMIT_MESSAGE"
         let prHeadRepoName = environVar "APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME"
+
+        let commit() =
+            let descripton = 
+                [ sprintf "Appveyor https://ci.appveyor.com/project/humhei/ts2fable/build/%s" buildVersion
+                  RepocommitMsg]
+                |> String.concat "\n"
+                |> fun s -> sprintf "\"%s\"" s 
+        
+            sprintf "commit -m %s -m %s" buildVersion descripton 
+            |> run gitTool repositoryDir
+            |> ignore                  
                                                       
         if  repoName = "humhei/ts2fable" && repoBranch = "master" then
             configGitAuthorization()
-            let repositoryDir = "./ts2fable-exports"
     
             let handle sshUrl addtionalBehavior = 
                 printfn "Begin Handle"
@@ -155,16 +167,7 @@ Target.Create "PushToExports" (fun _ ->
                 Shell.CopyDir repositoryDir testCompileDir (fun f -> f.EndsWith ".fs")
                 StageAll repositoryDir
                 try 
-                    let descripton = 
-                        [ sprintf "Appveyor https://ci.appveyor.com/project/humhei/ts2fable/build/%s" buildVersion
-                          RepocommitMsg]
-                        |> String.concat "\n"
-                        |> fun s -> sprintf "\"%s\"" s 
-                    
-                    sprintf "commit -m %s -m %s" buildVersion descripton 
-                    |> run gitTool repositoryDir
-                    |> ignore
-
+                    commit()
                     push repositoryDir
                     addtionalBehavior()       
                 with ex -> printf "%A" ex                     
@@ -174,7 +177,11 @@ Target.Create "PushToExports" (fun _ ->
                 handle sshUrl 
                     ( fun () -> 
                         checkoutBranch repositoryDir "dev"
-                        merge repositoryDir "-X theirs" "master" )
+                        merge repositoryDir "-X theirs" "master"
+                        StageAll repositoryDir
+                        commit()
+                        push repositoryDir
+                        )
             else
                 let sshUrl = "-b dev git@github.com:humhei/ts2fable-exports.git"
                 handle sshUrl (fun () -> ())                
