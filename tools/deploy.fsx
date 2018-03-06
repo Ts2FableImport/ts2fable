@@ -160,10 +160,9 @@ Target.Create "PushToExports" (fun _ ->
         if  repoName = "humhei/ts2fable" && repoBranch = "master" then
             configGitAuthorization()
     
-            let handle sshUrl addtionalBehavior = 
-                printfn "Begin Handle"
+            let handle addtionalBehavior = 
                 Shell.DeleteDir repositoryDir
-                clone "./" sshUrl repositoryDir
+                clone "./" "-b dev git@github.com:humhei/ts2fable-exports.git" repositoryDir
                 Shell.CopyDir repositoryDir testCompileDir (fun f -> f.EndsWith ".fs")
                 StageAll repositoryDir
                 try 
@@ -173,18 +172,16 @@ Target.Create "PushToExports" (fun _ ->
                 with ex -> printf "%A" ex                     
 
             if String.isNullOrEmpty prHeadRepoName then
-                let sshUrl = "git@github.com:humhei/ts2fable-exports.git"
-                handle sshUrl 
+                handle 
                     ( fun () -> 
-                        checkoutBranch repositoryDir "dev"
-                        merge repositoryDir "-X theirs" "master"
+                        checkoutBranch repositoryDir "master"
+                        merge repositoryDir "-X theirs" "dev"
                         StageAll repositoryDir
                         commit()
                         push repositoryDir
                         )
             else
-                let sshUrl = "-b dev git@github.com:humhei/ts2fable-exports.git"
-                handle sshUrl (fun () -> ())                
+                handle (fun () -> ())                
     | _ ->  ()
 )
 
