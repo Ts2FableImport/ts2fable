@@ -177,7 +177,6 @@ Target.Create "PushToExports" (fun _ ->
                         checkoutBranch repositoryDir "master"
                         merge repositoryDir "-X theirs" "dev"
                         StageAll repositoryDir
-                        commit()
                         push repositoryDir
                         )
             else
